@@ -2,11 +2,13 @@
 import { SigningStargateClient } from "@cosmjs/stargate";
 import { Registry } from "@cosmjs/proto-signing";
 import { Api } from "./rest";
-import { MsgRequestLoan } from "./types/loan/tx";
 import { MsgApproveLoan } from "./types/loan/tx";
+import { MsgRequestLoan } from "./types/loan/tx";
+import { MsgRepayLoan } from "./types/loan/tx";
 const types = [
-    ["/nodemadic.loan.loan.MsgRequestLoan", MsgRequestLoan],
     ["/nodemadic.loan.loan.MsgApproveLoan", MsgApproveLoan],
+    ["/nodemadic.loan.loan.MsgRequestLoan", MsgRequestLoan],
+    ["/nodemadic.loan.loan.MsgRepayLoan", MsgRepayLoan],
 ];
 export const MissingWalletError = new Error("wallet is required");
 export const registry = new Registry(types);
@@ -27,8 +29,9 @@ const txClient = async (wallet, { addr: addr } = { addr: "http://localhost:26657
     const { address } = (await wallet.getAccounts())[0];
     return {
         signAndBroadcast: (msgs, { fee, memo } = { fee: defaultFee, memo: "" }) => client.signAndBroadcast(address, msgs, fee, memo),
-        msgRequestLoan: (data) => ({ typeUrl: "/nodemadic.loan.loan.MsgRequestLoan", value: MsgRequestLoan.fromPartial(data) }),
         msgApproveLoan: (data) => ({ typeUrl: "/nodemadic.loan.loan.MsgApproveLoan", value: MsgApproveLoan.fromPartial(data) }),
+        msgRequestLoan: (data) => ({ typeUrl: "/nodemadic.loan.loan.MsgRequestLoan", value: MsgRequestLoan.fromPartial(data) }),
+        msgRepayLoan: (data) => ({ typeUrl: "/nodemadic.loan.loan.MsgRepayLoan", value: MsgRepayLoan.fromPartial(data) }),
     };
 };
 const queryClient = async ({ addr: addr } = { addr: "http://localhost:1317" }) => {
